@@ -12,7 +12,7 @@ packer/*.log
 packer/variables.pkrvars.hcl
 packer/http/preseed.cfg
 
-# ---------- Images (IMPORTANT) ----------
+# ---------- Images ----------
 images/
 *.qcow2
 *.img

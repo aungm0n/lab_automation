@@ -77,6 +77,7 @@ Place your Debian ISO inside:
 iso/debian.iso
 ```
 Note: I'm using debian 13 for testing.
+
 ---
 
 ### 3. (Optional) Configure variables
