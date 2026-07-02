@@ -1,0 +1,16 @@
+vms = {
+  web-01 = {
+    memory = 4096
+    vcpu   = 2
+  }
+
+  ladp-01 = {
+    memory = 4096
+    vcpu   = 2
+  }
+
+  ldap-02 = {
+    memory = 4096
+    vcpu   = 2
+  }
+}

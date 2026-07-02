@@ -1,0 +1,37 @@
+# ---------- Terraform ----------
+terraform/terraform.tfstate
+terraform/terraform.tfstate.*
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/crash.log
+terraform/terraform.tfvars
+
+# ---------- Packer ----------
+packer/output/
+packer/*.log
+packer/variables.pkrvars.hcl
+packer/http/preseed.cfg
+
+# ---------- Images (IMPORTANT) ----------
+images/
+*.qcow2
+*.img
+
+# ---------- ISO files ----------
+iso/*.iso
+
+# ---------- SSH keys ----------
+*.pem
+*.key
+*.pub
+keys/
+id_rsa*
+id_ed25519*
+
+# ---------- OS / Editor ----------
+.DS_Store
+.vscode/
+.idea/
+
+# ---------- Misc ----------
+*.log

@@ -1,0 +1,19 @@
+image_name   = "debian13-template"
+image_version = "v1"
+cpus         = 2
+memory       = 4096
+disk_size    = "20G"
+
+iso_path = "../iso/debian-13.3.0-amd64-DVD-1.iso"
+iso_checksum = "7b7837fa2ed64fd45224bff905643bd3ab32157dcc0ab1dc68aad5b9dc2d4d39"
+
+ssh_username = "user01"
+ssh_password = "changeme"
+
+output_dir   = "../images"
+
+timezone = "Pacific/Auckland"
+
+locale = "en_NZ.UTF-8"
+
+keyboard = "us"
