@@ -1,0 +1,13 @@
+---
+
+- name: Install auditd
+  apt:
+    name: 
+      - auditd
+      - audispd-plugins
+
+- name: Enable auditd
+  service:
+    name: auditd
+    enabled: yes
+    state: started

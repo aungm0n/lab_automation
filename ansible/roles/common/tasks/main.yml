@@ -1,0 +1,40 @@
+---
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Upgrade packages
+  apt:
+    upgrade: dist
+
+- name: Install common packages
+  apt:
+    name:
+      - vim
+      - git
+      - curl
+      - wget
+      - unzip
+      - zip
+      - htop
+      - btop
+      - tmux
+      - tree
+      - jq
+      - yq
+      - net-tools
+      - dnsutils
+      - tcpdump
+      - traceroute
+      - nmap
+      - lsof
+      - apt-transport-https
+      - ca-certificates
+      - gnupg
+      - python3-pip
+      - python3-venv
+      - rsync
+      - ncdu
+    state: present

@@ -119,7 +119,7 @@ build {
 
       "apt update",
 
-      "apt install -y qemu-guest-agent vim htop curl git unzip",
+      "apt install -y qemu-guest-agent systemd-resolved",
 
       "systemctl enable qemu-guest-agent",
 
@@ -138,5 +138,11 @@ build {
       "sync"
 
     ]
+  }
+
+  provisioner "shell" {
+    execute_command = "echo '${var.ssh_password}' | sudo -S sh '{{ .Path }}'"
+
+    script = "provisioners/systemd-networkd.sh"
   }
 }

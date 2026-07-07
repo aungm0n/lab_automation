@@ -1,0 +1,15 @@
+---
+- name: Configure all servers
+  hosts: all
+  become: yes
+
+  roles:
+    - common
+#    - users
+    - chrony
+    - unattended_upgrades
+    - ssh_hardening
+    - fail2ban
+#    - firewall
+    - sysctl
+    - auditd

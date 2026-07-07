@@ -1,4 +1,4 @@
-VERSION=v1
+VERSION=v2
 # ---------- Packer ----------
 PACKER=packer
 PACKER_DIR=packer

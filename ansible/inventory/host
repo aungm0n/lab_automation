@@ -1,0 +1,11 @@
+all:
+  children:
+
+    k8s:
+      hosts:
+        k8s-master01: 
+            ansible_host: 192.168.122.148
+        k8s-worker01:
+            ansible_host: 192.168.122.24
+        k8s-worker02:
+            ansible_host: 192.168.122.133
