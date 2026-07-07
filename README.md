@@ -140,7 +140,7 @@ This will create multiple VMs defined in `terraform.tfvars`.
 
 ---
 
-### Step 4 — Destroy environment
+### Step 4 — Ansible Provisioning
 
 ```bash
 ansible-playbook -i ansible/inventory.ini ansible/site.yml
