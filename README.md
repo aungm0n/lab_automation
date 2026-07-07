@@ -1,10 +1,11 @@
-# Homelab Infrastructure Automation (Packer + Terraform + KVM/libvirt)
+# Homelab Infrastructure Automation (Packer + Terraform + Ansible + KVM/libvirt)
 
-This project automates the creation of virtual machines on a local KVM/libvirt hypervisor using **Packer** and **Terraform**.
+This project automates the creation of virtual machines on a local KVM/libvirt hypervisor using **Packer**, **Terraform** and **Ansible**..
 
 It is designed as a reproducible homelab environment for experimenting with:
 - Infrastructure as Code (IaC)
 - Virtualization
+- Configuration management
 - Kubernetes cluster provisioning
 - Image-based VM workflows
 
@@ -14,15 +15,26 @@ It is designed as a reproducible homelab environment for experimenting with:
 
 ```
 
-ISO (Debian)
-↓
-Packer
-↓
-Golden qcow2 Image (base template)
-↓
-Terraform
-↓
-Multiple KVM Virtual Machines
+                Debian ISO
+                     │
+                     ▼
+                 Packer
+                     │
+                     ▼
+         Golden qcow2 Image Template
+                     │
+                     ▼
+                Terraform
+                     │
+                     ▼
+         KVM/libvirt Virtual Machines
+                     │
+                     ▼
+                 Ansible
+                     │
+                     ▼
+     Packages • Security • SSH Hardening
+     System Configuration • Kubernetes Prerequisites
 
 ```
 
@@ -35,6 +47,7 @@ Multiple KVM Virtual Machines
 .
 ├── packer/              # Packer templates for building base images
 ├── terraform/           # Terraform configuration for VM provisioning
+├── ansible/             # Ansible playbooks, inventories and roles
 ├── images/              # Built VM images (ignored in git)
 ├── iso/                 # OS installation ISO files (ignored in git)
 ├── keys/                # SSH keys (ignored in git)
@@ -54,6 +67,7 @@ Before using this project, ensure the following are installed:
 - virt-manager (optional GUI)
 - Terraform >= 1.5
 - Packer >= 1.9
+- Ansible
 - Make
 
 ---
@@ -130,6 +144,25 @@ This will create multiple VMs defined in `terraform.tfvars`.
 ### Step 4 — Destroy environment
 
 ```bash
+ansible-playbook -i ansible/inventory.ini ansible/site.yml
+```
+
+Ansible performs post-provisioning configuration such as:
+
+- Package installation
+- System updates
+- SSH hardening
+- Auditd configuration
+- Fail2ban installation
+- Time synchronization
+- Hostname configuration
+- Kubernetes prerequisites (planned)
+
+---
+
+### Step 5 — Destroy the environment
+
+```bash
 make tf-destroy
 ```
 
@@ -169,6 +202,20 @@ vms = {
 * Multi-VM scaling using `for_each`
 * Repeatable homelab environment
 * Image versioning (v1, v2, v3)
+* SSH hardening
+* Security baseline configuration
+
+---
+
+## Technology Stack
+
+| Layer | Tool |
+|--------|------|
+| Image Creation | Packer |
+| Infrastructure Provisioning | Terraform |
+| Configuration Management | Ansible |
+| Virtualization | KVM / libvirt |
+| Guest OS | Debian 13 |
 
 ---
 
