@@ -1,12 +1,11 @@
-# Homelab Infrastructure Automation (Packer + Terraform + Ansible + KVM/libvirt)
+# Infrastructure Automation Framework
 
-This project automates the creation of virtual machines on a local KVM/libvirt hypervisor using **Packer**, **Terraform** and **Ansible**..
+An Infrastructure as Code framework that provisions and configures virtual machines on KVM/libvirt, using Packer for immutable image builds, Terraform for provisioning, and Ansible for baseline configuration and security hardening. Currently targets a home-lab KVM environment, with a modular design intended to extend to additional providers (AWS, VMware).
 
 It is designed as a reproducible homelab environment for experimenting with:
 - Infrastructure as Code (IaC)
 - Virtualization
 - Configuration management
-- Kubernetes cluster provisioning
 - Image-based VM workflows
 
 ---
