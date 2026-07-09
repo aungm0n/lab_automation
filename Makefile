@@ -22,7 +22,7 @@ pk-debug:
 TERRAFORM=terraform
 TFVARS=terraform.tfvars
 # libvirt
-LIBVIRT_DIR=terraform
+LIBVIRT_DIR=terraform/libvirt
 
 tf-libvirt-init:
 	cd $(LIBVIRT_DIR) && $(TERRAFORM) init
