@@ -135,8 +135,6 @@ build {
 
       "rm -f /etc/ssh/ssh_host_*",
 
-      "ssh-keygen -A",
-
       "sync"
 
     ]
@@ -146,5 +144,13 @@ build {
     execute_command = "echo '${var.ssh_password}' | sudo -S sh '{{ .Path }}'"
 
     script = "provisioners/systemd-networkd.sh"
+      
+  }
+
+    provisioner "shell" {
+    execute_command = "echo '${var.ssh_password}' | sudo -S sh '{{ .Path }}'"
+
+    script = "provisioners/ssh_host_keys_regen.sh"
+      
   }
 }
