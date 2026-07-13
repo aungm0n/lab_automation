@@ -1,4 +1,4 @@
-VERSION=v2
+VERSION=v3
 # ---------- Packer ----------
 PACKER=packer
 PACKER_DIR=packer
@@ -38,7 +38,7 @@ tf-libvirt-plan:
 
 tf-libvirt-apply:
 	cd $(LIBVIRT_DIR) && $(TERRAFORM) apply \
-	-var "base_image=../images/debian13-template-$(VERSION)/debian13-template-$(VERSION)" \
+	-var "base_image=$(CURDIR)/images/debian13-template-$(VERSION)/debian13-template-$(VERSION)" \
 	-var-file=$(TFVARS) -auto-approve
 
 tf-libvirt-destroy:
@@ -63,7 +63,6 @@ tf-aws-plan:
 
 tf-aws-apply:
 	cd $(AWS_DIR) && $(TERRAFORM) apply \
-	-var "base_image=../images/debian13-template-$(VERSION)/debian13-template-$(VERSION)" \
 	-var-file=$(TFVARS) -auto-approve
 
 tf-aws-destroy:

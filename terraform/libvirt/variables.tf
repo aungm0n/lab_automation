@@ -14,5 +14,5 @@ variable "network" {
 }
 
 variable "base_image" {
-  default = "../images/debian13-template-v1/debian13-template-v1"
+  default = "/images/debian13-template-v1/debian13-template-v1"
 }

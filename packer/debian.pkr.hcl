@@ -135,6 +135,8 @@ build {
 
       "rm -f /etc/ssh/ssh_host_*",
 
+      "ssh-keygen -A",
+
       "sync"
 
     ]
