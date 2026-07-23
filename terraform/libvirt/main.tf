@@ -24,6 +24,10 @@ resource "libvirt_domain" "vm" {
 
   depends_on = [libvirt_volume.base]
 
+  cpu {
+    mode = "host-passthrough"
+  }
+  
   disk {
     volume_id = libvirt_volume.disk[each.key].id
   }

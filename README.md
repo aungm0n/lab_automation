@@ -1,6 +1,6 @@
 # Infrastructure Automation Framework
 
-An Infrastructure as Code framework that provisions and configures virtual machines on KVM/libvirt, using Packer for immutable image builds, Terraform for provisioning, and Ansible for baseline configuration and security hardening. Currently targets a home-lab KVM environment, with a modular design intended to extend to additional providers (AWS, VMware).
+An Infrastructure as Code framework that provisions and configures virtual machines on KVM/libvirt, using Packer for immutable image builds, Terraform for provisioning, and Ansible for baseline configuration and security hardening. Currently targets a KVM environment, with a modular design intended to extend to additional providers (AWS, VMware).
 
 It is designed as a reproducible environment for experimenting with:
 - Infrastructure as Code (IaC)
@@ -38,7 +38,7 @@ It is designed as a reproducible environment for experimenting with:
      System Configuration • Kubernetes Prerequisites
 
 ```
-Packer currently builds the golden image used for the KVM/libvirt path. The AWS path uses an official Debian AMI in place of a custom Packer image (a Packer-built AMI is a possible future addition — see [Future Improvements](#future-improvements)). Both paths converge at Ansible, since the roles are OS-level and provider-agnostic.
+Packer currently builds the golden image used for the KVM/libvirt path. The AWS path uses an official Debian AMI in place of a custom Packer image (a Packer-built AMI is a possible future addition — see [Future Improvements](#future-improvements)). Both paths converge at Ansible, since the roles are OS-level and provider-agnostic. Once nodes are provisioned and baseline-configured, Kubespray takes over to bootstrap the Kubernetes cluster itself (kubeadm, control plane, Calico CNI).
 
 ---
 
@@ -223,6 +223,58 @@ make tf-aws-destroy
 
 ---
 
+## Kubernetes Cluster Bootstrap (Kubespray)
+
+Once nodes are provisioned (Terraform) and baseline-configured (this project's Ansible roles — SSH hardening, sudoers, time sync, etc.), [Kubespray](https://github.com/kubernetes-sigs/kubespray) is used to bootstrap the actual Kubernetes cluster on top. Kubespray is treated as an external, version-pinned dependency — it is **not** vendored into this repository (see [Notes](#notes)).
+
+### 1. Clone Kubespray at a pinned version
+
+```bash
+git clone --branch v2.31.0 https://github.com/kubernetes-sigs/kubespray.git
+cd kubespray
+```
+
+Pinning a specific tag (rather than `master`) keeps cluster bootstraps reproducible across runs.
+
+### 2. Set up an isolated Python environment
+
+Kubespray pins specific `ansible-core` and collection versions that can conflict with the Ansible install used elsewhere in this project, so it gets its own virtual environment:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 3. Build the inventory
+
+Copy the sample inventory and edit it with the nodes provisioned by Terraform (IPs available via `terraform output` in `terraform/libvirt` or `terraform/aws`):
+
+```bash
+cp -rfp inventory/sample inventory/prod_infra
+```
+
+Review `inventory/prod_infra/inventory.ini` afterward — in particular, double-check host entries under `[kube_control_plane]` / `[etcd]` / `[kube_node]` for stray leading whitespace or invisible characters, since Ansible's `when` conditions that reference `groups[...]` can silently mismatch and cause roles (e.g. the Calico CNI role) to skip without a visible error.
+
+### 4. Run the cluster playbook
+
+```bash
+ansible-playbook -i inventory/mycluster/inventory.ini cluster.yml -b -K
+```
+
+`-b` enables privilege escalation, `-K` prompts for the sudo password if nodes don't have passwordless sudo configured.
+
+### 5. Verify the cluster
+
+```bash
+kubectl --kubeconfig inventory/mycluster/artifacts/admin.conf get nodes
+kubectl --kubeconfig inventory/mycluster/artifacts/admin.conf get pods -n kube-system
+```
+
+All nodes should report `Ready`, and kube-system pods should be `Running`.
+
+---
+
 ## Example VM Configuration
 
 **KVM/libvirt** — defined in `terraform/libvirt/terraform.tfvars`:
@@ -271,6 +323,7 @@ instances = {
 * Multi-VM scaling using `for_each`
 * Provider-agnostic Ansible roles shared across libvirt and AWS
 * Dynamic Ansible inventory sourced directly from Terraform output
+* Kubernetes cluster bootstrap via Kubespray (kubeadm + Calico CNI), layered on top of Terraform-provisioned, Ansible-hardened nodes
 * Repeatable homelab and cloud environments
 * Repeatable homelab environment
 * Image versioning (v1, v2, v3)
@@ -288,6 +341,8 @@ instances = {
 | Configuration Management | Ansible |
 | Virtualization | KVM / libvirt |
 | Cloud Provider | AWS (VPC, EC2) |
+| Container Orchestration | Kubernetes (via Kubespray) |
+| CNI | Calico |
 | Guest OS | Debian 13 |
 
 ---
@@ -298,6 +353,7 @@ instances = {
 * VM images, ISO files, and state files are excluded from version control
 * Not production-hardened
 * AWS resources incur real cost while running — always `terraform destroy` after testing
+* Kubespray is used for Kubernetes cluster bootstrap but is intentionally **not vendored** into this repository — it's cloned at a pinned version as an external dependency (see [Kubernetes Cluster Bootstrap](#kubernetes-cluster-bootstrap-kubespray))
 
 ---
 
@@ -320,7 +376,6 @@ See `.gitignore` for details.
 * Packer-built AMI for AWS (matching the KVM/libvirt golden-image workflow)
 * SSH inventory generation
 * VMware provider support
-* Kubernetes cluster bootstrap automation
 * Remote Terraform state backend
 
 ---
