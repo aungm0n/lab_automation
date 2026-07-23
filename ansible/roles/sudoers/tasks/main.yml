@@ -1,0 +1,8 @@
+- name: Configure passwordless sudo users
+  ansible.builtin.template:
+    src: sudoers.j2
+    dest: /etc/sudoers.d/root_users
+    owner: root
+    group: root
+    mode: '0440'
+    validate: 'visudo -cf %s'

@@ -13,3 +13,4 @@
 #    - firewall
     - sysctl
     - auditd
+    - sudoers
